@@ -13,7 +13,7 @@
  * current migration(s).
  */
 const exec = require('child_process').exec;
-const cmd = 'node_modules/.bin/sequelize db:migrate';
+const cmd = '';//'node_modules/.bin/sequelize db:migrate';
 
 module.exports = exec(cmd, (error, stdout, stderr) => {
   // Log the results to the console.

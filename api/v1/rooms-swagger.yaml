@@ -7673,20 +7673,20 @@ paths:
         default:
           $ref: "#/responses/genericError"
 
-  /rooms/{key}/events:
-    x-swagger-router-controller: rooms
+  /rooms/{roomId}/events:
+    x-swagger-router-controller: roomEvents
     get:
       summary: Retrieve all room events
       tags: [ rooms ]
       description: Retrieve all the room events that are available to choose from
-      operationId: findRooms
+      operationId: findRoomEvents
       parameters:
         -
-          name: key
+          name: roomId
           description: Room ID
           in: path
           required: true
-          type: string
+          type: integer
         -
           $ref: "#/parameters/limitParam"
         -
@@ -7698,7 +7698,7 @@ paths:
           schema:
             type: array
             items:
-              $ref: "#/definitions/RoomResponse"
+              $ref: "#/definitions/RoomEventResponse"
         400:
           $ref: "#/responses/400"
         401:
@@ -7714,11 +7714,11 @@ paths:
       operationId: postRooms
       parameters:
         -
-          name: key
+          name: roomId
           description: Room ID
           in: path
           required: true
-          type: string
+          type: integer
         -
           name: queryBody
           in: body
@@ -9877,6 +9877,33 @@ definitions:
       type:
         type: integer
 
+  RoomEventResponse:
+    type: object
+    description: A response for information about a room event
+    properties:
+      id:
+        type: integer
+      log:
+        type: string
+      type:
+        type: string
+      pendingAction:
+        type: boolean
+      dataValue:
+        type: string
+      roomId:
+        type: integer
+      botId:
+        type: integer
+      userId:
+        type: integer
+      actionId:
+        type: integer
+      botDataId:
+        type: integer
+      pendingId:
+        type: integer
+
   RoomTypeResponse:
     type: object
     description: A response for information about a room type
@@ -9887,29 +9914,6 @@ definitions:
         type: string
       active:
         type: boolean
-
-  RoomEventResponse:
-    type: object
-    description: A response for each room event
-    properties:
-      id:
-        type: integer
-      log:
-        type: string
-      type:
-        type: string
-      createdBy:
-        type: string
-      createdById:
-        type: integer
-      actionId:
-        type: integer
-      dataId:
-        type: integer
-      dataValue:
-        type: string
-      actionValue:
-        type: string
 
 # =============================================================================
 parameters:

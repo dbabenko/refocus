@@ -112,6 +112,7 @@ function doFindAll(reqResNext, props, opts) {
  * redis
  */
 function doFindResponse(reqResNext, props, opts, cacheKey) {
+  console.log(opts);
   if (opts.limit || opts.offset) {
     reqResNext.res.links({
       prev: reqResNext.req.originalUrl,
@@ -163,6 +164,7 @@ function doFindResponse(reqResNext, props, opts, cacheKey) {
  */
 module.exports = function doFind(req, res, next, props) {
   const opts = fu.options(req.swagger.params, props);
+  console.log(req.swagger.params);
 
   if (props.cacheEnabled) {
     const cacheKey = JSON.stringify(opts);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2016, salesforce.com, inc.
+ * Copyright (c) 2017, salesforce.com, inc.
  * All rights reserved.
  * Licensed under the BSD 3-Clause license.
  * For full license text, see LICENSE.txt file in the repo root or
@@ -7,33 +7,41 @@
  */
 
 /**
- * db/model/roomLog.js
+ * db/model/roomEvent.js
+ *
+ * Room Events are how bots are supposed to interact with rooms
+ * each room event type along with
  */
-const common = require('../helpers/common');
-const constants = require('../constants');
 
 const assoc = {};
 
 module.exports = function user(seq, dataTypes) {
   const RoomEvent = seq.define('RoomEvent', {
+    id: {
+      type: dataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+    },
     log: {
       type: dataTypes.STRING,
       allowNull: false,
-      comment: 'Readable log line'
+      comment: 'Readable log line',
     },
     type: {
-      type: dataTypes.ENUM('ACTION', 'DATAUPDATE', 'DATACREATE', 'CONNECT', 'REFRESH'),
-      defaultValue: 'CONNECT',
+      type:
+        dataTypes.ENUM('LOGGING', 'ACTION', 'DATAUPDATE', 'CONNECT', 'REFRESH'),
+      defaultValue: 'LOGGING',
+      comment: 'Type of event',
     },
     pendingAction: {
       type: dataTypes.BOOLEAN,
       defaultValue: false,
-      comment: 'Determines if an pending action is completed'
+      comment: 'Determines if an pending action is completed',
     },
-    name: {
+    dataValue: {
       type: dataTypes.STRING,
       allowNull: true,
-      comment: 'Name of action or data updated'
+      comment: 'Value of data to update',
     },
   }, {
     classMethods: {
@@ -61,6 +69,23 @@ module.exports = function user(seq, dataTypes) {
           foreignKey: 'pendingId',
         });
       },
-    }
-  });  return RoomEvent;
+    },
+    hooks: {
+
+      /**
+       * When a publihsed aspect is deleted. Delete its entry in the aspectStore
+       * and the sampleStore if any.
+       *
+       * @param {Aspect} inst - The deleted instance
+       */
+      afterCreate(inst /* , opts */) {
+        if (inst.getDataValue('dataValue')) {
+          const test = { log: 'test' };
+          seq.models.RoomEvent.create(test);
+        }
+      }, // hooks.afterCreate
+    },
+  });
+  return RoomEvent;
 };
+
