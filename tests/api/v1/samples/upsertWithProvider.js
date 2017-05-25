@@ -7,7 +7,7 @@
  */
 
 /**
- * tests/api/v1/samples/postWithProvider.js
+ * tests/api/v1/samples/upsertWithProvider.js
  */
 'use strict';
 
@@ -155,10 +155,4 @@ describe(`api: upsert without cache`, () => {
       });
     });
   });
-
-  it('on bulkUpsert another sample WITHOUT cache, ' +
-    'provider and user fields are returned');
-
-  it('on bulkUpsert another sample WITH cache, ' +
-    'provider and user fields are returned');
 });
