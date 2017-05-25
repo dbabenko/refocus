@@ -80,17 +80,16 @@ describe('redisStore: POST using worker process' + path, () => {
         value: '4',
       },
     ])
-    .expect(constants.httpStatus.OK)
-    .expect((res) => {
-      expect(res.body.status).to.contain('OK');
-      // make sure that the jobId is returned as a part of the response.
-      expect(res.body.jobId).to.be.at.least(1);
-    })
-    .end((err) => {
+    // .expect(constants.httpStatus.OK)
+    .end((err, res) => {
       if (err) {
         done(err);
       }
 
+      console.log(res.err)
+      expect(res.body.status).to.contain('OK');
+      // make sure that the jobId is returned as a part of the response.
+      expect(res.body.jobId).to.be.at.least(1);
       done();
     });
   });
