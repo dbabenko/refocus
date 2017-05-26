@@ -9,8 +9,8 @@
 /**
  * db/model/roomEvent.js
  *
- * Room Events are how bots are supposed to interact with rooms
- * each room event type along with
+ * Room Events track all the actions of all the room tables.
+ * This will be used to replay actions.
  */
 
 const assoc = {};
@@ -27,22 +27,12 @@ module.exports = function user(seq, dataTypes) {
       allowNull: false,
       comment: 'Readable log line',
     },
-    type: {
-      type:
-        dataTypes.ENUM('LOGGING', 'ACTION', 'DATAUPDATE', 'CONNECT', 'REFRESH'),
-      defaultValue: 'LOGGING',
-      comment: 'Type of event',
-    },
-    pendingAction: {
-      type: dataTypes.BOOLEAN,
-      defaultValue: false,
-      comment: 'Determines if an pending action is completed',
-    },
-    dataValue: {
-      type: dataTypes.STRING,
-      allowNull: true,
-      comment: 'Value of data to update',
-    },
+    payload: {
+      type: dataTypes.JSON,
+      allowNull: false,
+      comment:
+        'Everytime a table is update the actions will recorded here',
+    }
   }, {
     classMethods: {
       getRoomEventAssociations() {
@@ -53,6 +43,12 @@ module.exports = function user(seq, dataTypes) {
         assoc.room = RoomEvent.belongsTo(models.Room, {
           foreignKey: 'roomId',
         });
+        assoc.pendingaction = RoomEvent.belongsTo(models.RoomRule, {
+          foreignKey: 'roomRuleId',
+        });
+        assoc.pendingaction = RoomEvent.belongsTo(models.RoomSetting, {
+          foreignKey: 'roomSettingId',
+        });
         assoc.bot = RoomEvent.belongsTo(models.Bot, {
           foreignKey: 'botId',
         });
@@ -62,28 +58,16 @@ module.exports = function user(seq, dataTypes) {
         assoc.botaction = RoomEvent.belongsTo(models.BotAction, {
           foreignKey: 'actionId',
         });
-        assoc.currentbotdata = RoomEvent.belongsTo(models.CurrentBotData, {
+        assoc.botaction = RoomEvent.belongsTo(models.BotDotat, {
           foreignKey: 'botDataId',
+        });
+        assoc.currentbotdata = RoomEvent.belongsTo(models.CurrentBotData, {
+          foreignKey: 'currentBotDataId',
         });
         assoc.pendingaction = RoomEvent.belongsTo(models.PendingBotAction, {
           foreignKey: 'pendingId',
         });
       },
-    },
-    hooks: {
-
-      /**
-       * When a publihsed aspect is deleted. Delete its entry in the aspectStore
-       * and the sampleStore if any.
-       *
-       * @param {Aspect} inst - The deleted instance
-       */
-      afterCreate(inst /* , opts */) {
-        if (inst.getDataValue('dataValue')) {
-          const test = { log: 'test' };
-          seq.models.RoomEvent.create(test);
-        }
-      }, // hooks.afterCreate
     },
   });
   return RoomEvent;
